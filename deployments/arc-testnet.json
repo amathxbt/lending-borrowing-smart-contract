@@ -1,0 +1,16 @@
+{
+  "network": "arcTestnet",
+  "timestamp": "2026-05-19T22:37:13.980Z",
+  "addresses": {
+    "UnitFlowPriceOracle": "0x5bD0c70dDD1cC439E613dEF1Da7F06E1a24DB007",
+    "UnitFlowInterestRateModel": "0x07AeC51d8448b4a6560ec8cB185ce396ACD2E1B9",
+    "UnitFlowFeeDistributor": "0x4fF873fAE73a5FcDa5De06E63Ef22c32207e4F0c",
+    "UnitFlowLendingPool": "0xb6cBD47e67DeF8270916A9F756526015Fabb2f1B",
+    "uUSDC": "0xbab299155CDC34b790e2d96DdadC3Ac64708C003",
+    "uEURC": "0x6bdaa941dE3D01b97B6010b2e5eFd6439ec8D2c6",
+    "dUSDC": "0xD21Fe44773107824cee0E36F6B38A072A02024F5",
+    "dEURC": "0x169138F1551B2D4c78240e67fD0B9075d2366788",
+    "UnitFlowLiquidationEngine": "0xc3f1024ff9ff178D7B321a28966F4bBCa7db3788",
+    "UnitFlowLendingConfigurator": "0xAa7cefeb7FD04dF05CDA389bD1fc4097BDB0b61a"
+  }
+}

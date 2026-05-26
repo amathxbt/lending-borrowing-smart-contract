@@ -211,7 +211,11 @@ contract UnitFlowLendingPool is ReentrancyGuard, Pausable, Ownable2Step {
         require(amount > 0, "Pool: zero amount");
         ReserveData storage reserve = _getActiveReserve(asset);
 
-        // -- Checks-Effects-Interactions ---------------------------------------
+        // -- Checks-Effects-Interactions: token transfer FIRST ----------------
+        // Pull tokens before any state updates to prevent reentrancy-based
+        // inflation of collateral / uToken balances against unconfirmed funds.
+        IERC20(asset).safeTransferFrom(msg.sender, address(this), amount);
+
         _updateReserveState(reserve, asset);
 
         reserve.totalLiquidity += amount;
@@ -220,9 +224,6 @@ contract UnitFlowLendingPool is ReentrancyGuard, Pausable, Ownable2Step {
         UnitFlowUToken(reserve.uToken).mint(onBehalfOf, amount, reserve.liquidityIndex);
 
         _updateInterestRates(reserve, asset, amount, 0);
-
-        // Interactions last
-        IERC20(asset).safeTransferFrom(msg.sender, address(this), amount);
 
         emit Supply(asset, onBehalfOf, amount, reserve.liquidityIndex);
     }

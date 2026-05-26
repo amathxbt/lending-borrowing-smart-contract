@@ -127,14 +127,17 @@ contract UnitFlowLendingPool is ReentrancyGuard, Pausable, Ownable2Step {
         address oracle_,
         address interestRateModel_,
         address feeDistributor_,
+        address liquidationEngine_,
         address owner_
     ) Ownable(owner_) {
-        require(oracle_            != address(0), "Pool: zero oracle");
-        require(interestRateModel_ != address(0), "Pool: zero IRM");
-        require(feeDistributor_    != address(0), "Pool: zero fee distributor");
+        require(oracle_             != address(0), "Pool: zero oracle");
+        require(interestRateModel_  != address(0), "Pool: zero IRM");
+        require(feeDistributor_     != address(0), "Pool: zero fee distributor");
+        require(liquidationEngine_  != address(0), "Pool: zero liquidation engine");
         oracle            = UnitFlowPriceOracle(oracle_);
         interestRateModel = UnitFlowInterestRateModel(interestRateModel_);
         feeDistributor    = feeDistributor_;
+        liquidationEngine = liquidationEngine_;
     }
 
     // --- Admin ----------------------------------------------------------------

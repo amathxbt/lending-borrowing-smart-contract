@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import "./libraries/WadRayMath.sol";
@@ -75,6 +76,7 @@ contract UnitFlowLendingPool is ReentrancyGuard, Pausable, Ownable2Step {
         uint256 lastUpdateTimestamp;
         bool    active;
         bool    borrowingEnabled;
+        uint8   tokenDecimals;   // Decimal precision of the underlying asset
     }
 
     struct UserAccountData {
@@ -150,6 +152,8 @@ contract UnitFlowLendingPool is ReentrancyGuard, Pausable, Ownable2Step {
         require(debtToken_ != address(0), "Pool: zero debtToken");
         require(!reserves[asset].active, "Pool: reserve exists");
 
+        uint8 decimals_ = IERC20Metadata(asset).decimals();
+
         reserves[asset] = ReserveData({
             uToken:               uToken_,
             debtToken:            debtToken_,
@@ -163,7 +167,8 @@ contract UnitFlowLendingPool is ReentrancyGuard, Pausable, Ownable2Step {
             reserveBalance:       0,
             lastUpdateTimestamp:  block.timestamp,
             active:               true,
-            borrowingEnabled:     true
+            borrowingEnabled:     true,
+            tokenDecimals:        decimals_
         });
         reserveList.push(asset);
         emit ReserveAdded(asset, uToken_, debtToken_);
@@ -449,16 +454,17 @@ contract UnitFlowLendingPool is ReentrancyGuard, Pausable, Ownable2Step {
 
             // Collateral value
             uint256 collateral = userCollateral[user][asset];
+            uint256 scaler = 10 ** reserve.tokenDecimals;
             if (collateral > 0) {
-                // Convert 6-decimal token amount to 8-decimal USD
-                data.totalCollateralUSD += (collateral * price) / 1e6;
+                // Convert token amount to 8-decimal USD using per-reserve decimals
+                data.totalCollateralUSD += (collateral * price) / scaler;
             }
 
             // Debt value
             uint256 debt = UnitFlowDebtToken(reserve.debtToken)
                 .balanceOf(user, reserve.variableBorrowIndex);
             if (debt > 0) {
-                data.totalDebtUSD += (debt * price) / 1e6;
+                data.totalDebtUSD += (debt * price) / scaler;
             }
         }
 

@@ -281,6 +281,7 @@ contract UnitFlowLendingPool is ReentrancyGuard, Pausable, Ownable2Step {
         address onBehalfOf
     ) external nonReentrant whenNotPaused {
         require(amount > 0, "Pool: zero amount");
+        require(msg.sender == onBehalfOf, "Pool: unauthorized borrow on behalf");
         ReserveData storage reserve = _getActiveReserve(asset);
         require(reserve.borrowingEnabled, "Pool: borrowing disabled");
 
